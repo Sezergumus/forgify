@@ -2,103 +2,190 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ModeToggle } from "./theme-switch";
-import { File, Play, StopCircle } from "lucide-react"; // Lucide React ikonları
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Link from "next/link";
+import { Play, Pause, Power, Settings, Server, Globe } from "lucide-react";
 
 export default function Dashboard() {
-  const [jarFile, setJarFile] = useState<File | null>(null);
-  const [logs, setLogs] = useState<string[]>([]);
-  const [serverRunning, setServerRunning] = useState(false);
+  const [servers, setServers] = useState([
+    {
+      id: "server-1",
+      name: "Homies Strong Together",
+      status: "running",
+      port: 25565,
+      version: "1.20.4",
+      ram: "2G",
+      type: "vanilla",
+    },
+    {
+      id: "server-2",
+      name: "Survival Server",
+      status: "paused",
+      port: 25565,
+      version: "1.7.2",
+      ram: "2G",
+      type: "forge",
+    },
+    {
+      id: "server-3",
+      name: "Creative World",
+      status: "paused",
+      port: 25565,
+      version: "1.12.4",
+      ram: "2G",
+      type: "spigot",
+    },
+  ]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setJarFile(file);
-    }
-  };
-
-  const startServer = () => {
-    if (!jarFile) {
-      alert("Please upload a JAR file!");
-      return;
-    }
-    setServerRunning(true);
-    setLogs((prevLogs) => [...prevLogs, "[INFO] Starting the server..."]);
-    setTimeout(() => {
-      setLogs((prevLogs) => [
-        ...prevLogs,
-        "[INFO] Server is running! IP: 192.168.1.1:25565",
-      ]);
-    }, 20);
-  };
-
-  const stopServer = () => {
-    setServerRunning(false);
-    setLogs((prevLogs) => [...prevLogs, "[INFO] Server stopped."]);
+  const handleServerAction = (id: string, action: string) => {
+    // This would be replaced with actual server control logic
+    setServers(
+      servers.map((server) => {
+        if (server.id === id) {
+          return {
+            ...server,
+            status: action === "start" ? "running" : "paused",
+          };
+        }
+        return server;
+      })
+    );
   };
 
   return (
-    <div className="min-h-screen bg-background text-primary dark:bg-background-dark dark:text-primary-dark">
-      <div className="container mx-auto p-6">
-        {/* Theme Switch */}
-        <div className="flex justify-end mb-4">
-          <ModeToggle />
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center border-b border-white/25 pb-4">
+        <div>
+          <h1 className="text-2xl font-bold">Welcome!</h1>
+          <p className="text-gray-500">
+            You can manage your servers from here.
+          </p>
         </div>
 
-        {/* File Upload and Start Server */}
-        <div className="flex items-center space-x-4 mb-6">
-          <label
-            htmlFor="jarFile"
-            className="flex w-1/2 items-center cursor-pointer p-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600"
-          >
-            <File className="mr-2" />
-            <span className="text-sm">
-              {
-                jarFile
-                  ? jarFile.name // Dosya yüklendiğinde
-                  : "Upload a JAR File" // Dosya yüklenmediğinde
-              }
-            </span>
-            <Input
-              id="jarFile"
-              type="file"
-              className="hidden"
-              accept=".jar"
-              onChange={handleFileChange}
-            />
-          </label>
-          <Button
-            onClick={startServer}
-            className="h-10 px-4 py-2 w-1/2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-            disabled={serverRunning || !jarFile}
-          >
-            <Play className="mr-2" />
-            Start Server
-          </Button>
-        </div>
+        <Button asChild>
+          <Link href="/create-server">
+            <Server className="h-4 w-4" /> Yeni Sunucu Ekle
+          </Link>
+        </Button>
+      </div>
 
-        {/* Logs Section */}
-        <div
-          className="bg-gray-800 text-white p-4 rounded-lg mb-6 h-48 overflow-y-auto"
-          style={{ whiteSpace: "pre-wrap" }}
-        >
-          {logs.map((log, index) => (
-            <div key={index} className="text-xs">
-              {log}
-            </div>
+      {/* Sunucu Listesi */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Servers</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {servers.map((server) => (
+            <Card
+              key={server.id}
+              className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/50 bg-gradient-to-b from-card to-card/80 py-0"
+            >
+              <CardHeader className="p-4 bg-muted/30 flex justify-between border-b border-border/50">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-bold">
+                    {server.name}
+                  </CardTitle>
+                  <div
+                    className={`flex items-center gap-2 px-2 py-1 rounded-full bg-card/50 border border-border/50 ${
+                      server.status === "running"
+                        ? "bg-green-500/25 border-green-500"
+                        : "bg-red-500/25 border-red-500"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block w-3 h-3 rounded-full ${
+                        server.status === "running"
+                          ? "bg-green-500 animate-pulse"
+                          : "bg-red-500"
+                      }`}
+                    ></span>
+                    <span
+                      className={`text-xs font-medium ${
+                        server.status === "running"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {server.status === "running" ? "Online" : "Offline"}
+                    </span>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="px-4">
+                <div className="flex items-center mb-4">
+                  <Globe className="h-5 w-5 text-primary mr-2" />
+                  <span className="text-sm font-medium">
+                    {server.type.charAt(0).toUpperCase() + server.type.slice(1)}{" "}
+                    <span className="ml-1 text-sm font-medium bg-primary/10 px-2 py-0.5 rounded">
+                      {server.version}
+                    </span>
+                  </span>
+                </div>
+
+                <div className="space-y-3 bg-card/50 p-4 rounded-lg border border-border/50 shadow-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Port:</span>
+                    <span className="text-sm font-medium bg-primary/10 px-2 py-0.5 rounded">
+                      {server.port}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">RAM:</span>
+                    <span className="text-sm font-medium bg-primary/10 px-2 py-0.5 rounded">
+                      {server.ram}B
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+
+              <CardFooter className="p-4 bg-muted/30 flex justify-between border-t border-border/50">
+                {server.status === "running" ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-amber-500 hover:text-amber-600 hover:border-amber-500 hover:bg-amber-500/10"
+                    onClick={() => handleServerAction(server.id, "stop")}
+                  >
+                    <Pause className="h-4 w-4 mr-1" /> Pause
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-green-500 hover:text-green-600 hover:border-green-500 hover:bg-green-500/10"
+                    onClick={() => handleServerAction(server.id, "start")}
+                  >
+                    <Play className="h-4 w-4 mr-1" /> Start
+                  </Button>
+                )}
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                    title="Server Settings"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                    title="Force Stop Server"
+                  >
+                    <Power className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardFooter>
+            </Card>
           ))}
         </div>
-
-        {/* Stop Server Button */}
-        <Button
-          onClick={stopServer}
-          className="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-          disabled={!serverRunning}
-        >
-          <StopCircle className="mr-2" />
-          Stop Server
-        </Button>
       </div>
     </div>
   );
