@@ -20,7 +20,7 @@ export default function Dashboard() {
       status: "running",
       port: 25565,
       version: "1.20.4",
-      ram: "2G",
+      ram: 2048,
       type: "vanilla",
     },
     {
@@ -29,7 +29,7 @@ export default function Dashboard() {
       status: "paused",
       port: 25565,
       version: "1.7.2",
-      ram: "2G",
+      ram: 2048,
       type: "forge",
     },
     {
@@ -38,7 +38,7 @@ export default function Dashboard() {
       status: "paused",
       port: 25565,
       version: "1.12.4",
-      ram: "2G",
+      ram: 2048,
       type: "spigot",
     },
   ]);
@@ -59,25 +59,25 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center border-b border-white/25 pb-4">
+    <div className="p-4 xl:p-0 max-w-7xl mx-auto mt-8">
+      <div className="flex justify-between items-center border-b border-black/25 dark:border-white/25 pb-4">
         <div>
-          <h1 className="text-2xl font-bold">Welcome!</h1>
+          <h1 className="text-4xl font-bold">Welcome!</h1>
           <p className="text-gray-500">
             You can manage your servers from here.
           </p>
         </div>
-
-        <Button asChild>
-          <Link href="/create-server">
-            <Server className="h-4 w-4" /> Yeni Sunucu Ekle
-          </Link>
-        </Button>
       </div>
 
-      {/* Sunucu Listesi */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Servers</h2>
+      <div className="mt-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Servers</h2>
+          <Button asChild>
+            <Link href="/create-server">
+              <Server className="h-4 w-4" /> New Server
+            </Link>
+          </Button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {servers.map((server) => (
             <Card
@@ -86,7 +86,7 @@ export default function Dashboard() {
             >
               <CardHeader className="p-4 bg-muted/30 flex justify-between border-b border-border/50">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-bold">
+                  <CardTitle className="text-lg font-bold truncate">
                     {server.name}
                   </CardTitle>
                   <div
@@ -104,7 +104,7 @@ export default function Dashboard() {
                       }`}
                     ></span>
                     <span
-                      className={`text-xs font-medium ${
+                      className={`text-xs font-medium transition-all ${
                         server.status === "running"
                           ? "text-green-500"
                           : "text-red-500"
@@ -137,7 +137,7 @@ export default function Dashboard() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">RAM:</span>
                     <span className="text-sm font-medium bg-primary/10 px-2 py-0.5 rounded">
-                      {server.ram}B
+                      {server.ram.toLocaleString()} MB
                     </span>
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export default function Dashboard() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-amber-500 hover:text-amber-600 hover:border-amber-500 hover:bg-amber-500/10"
+                    className="text-amber-500 hover:text-amber-600 hover:border-amber-500 hover:bg-amber-500/10 cursor-pointer"
                     onClick={() => handleServerAction(server.id, "stop")}
                   >
                     <Pause className="h-4 w-4 mr-1" /> Pause
@@ -157,7 +157,7 @@ export default function Dashboard() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-green-500 hover:text-green-600 hover:border-green-500 hover:bg-green-500/10"
+                    className="text-green-500 hover:text-green-600 hover:border-green-500 hover:bg-green-500/10 cursor-pointer"
                     onClick={() => handleServerAction(server.id, "start")}
                   >
                     <Play className="h-4 w-4 mr-1" /> Start
